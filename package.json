@@ -1,0 +1,14 @@
+{
+  "name": "contrail-utils",
+  "version": "1.0.0",
+  "description": "Utility functions for Contrail",
+  "license": "UNLICENSE",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@contrail/entity-types": "^1.1.62",
+    "@contrail/sdk": "^1.4.18"
+  }
+}
