@@ -1,10 +1,7 @@
 import { Entities } from "@contrail/sdk";
 import { Item } from "@contrail/entity-types";
 
-export const upsertItem = async (item: Item): Promise<Item> => {
-  if(!item.federatedId) {
-    throw new Error("Item must have a federatedId to be upserted.");
-  }
+export const upsertItem = async (item: Pick<Item, "name" | "federatedId">): Promise<Item> => {
   const client = new Entities();
   const existingItem = await client.get({
     entityName: "item",

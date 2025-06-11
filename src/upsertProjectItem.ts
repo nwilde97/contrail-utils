@@ -1,16 +1,9 @@
 import { Entities } from "@contrail/sdk";
+import { ensureItemInProject } from "./ensureItemInProject";
 
 export const upsertProjectItem = async <T>(projectItem: T, itemId: string, projectId: string): Promise<any> => {
-  const client = new Entities();
-  const projectItems = await client.get({
-    entityName: "project-item",
-    criteria: { itemId, projectId }
-  });
-  const entity = projectItems.length > 0 ? projectItems[0] : await client.create({
-    entityName: "project-item",
-    object: { itemId, projectId }
-  });
-  await client.update({
+  const entity = await ensureItemInProject(itemId, projectId);
+  await new Entities().update({
     entityName: "project-item",
     id: entity.id,
     object: projectItem
