@@ -427,21 +427,26 @@ export async function getAssortmentItems(criteria: GetAssortmentItemsCriteria) {
   }
 }
 
+type PaginatedResponse<T> = {
+  results: T[];
+  nextPageKey: string | undefined | null;
+};
+
 export async function getAllProjectItemsForProjectWithPagination(
   projectId: string,
 ) {
   const client = new Entities();
 
-  let nextPageKey: string | undefined = undefined;
+  let nextPageKey: PaginatedResponse<ProjectItem>["nextPageKey"] = undefined;
   const projectItems: ProjectItem[] = [];
 
   while (true) {
-    const response = await client.get({
+    const response = (await client.get({
       entityName: "project-item",
       apiVersion: API_VERSION.V2,
       nextPageKey,
       criteria: { projectId },
-    });
+    })) as PaginatedResponse<ProjectItem>;
     nextPageKey = response.nextPageKey;
 
     if (response.results.length === 0 || !nextPageKey) {
