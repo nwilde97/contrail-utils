@@ -8,7 +8,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@contrail/entity-types": "^1.1.62",
+    "@contrail/entity-types": "^1.1.63",
     "@contrail/sdk": "^1.4.18"
   }
 }
