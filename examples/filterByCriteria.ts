@@ -25,7 +25,12 @@
  * This file does not document other EntityCriteria capabilities, such as pagination and hydrating related entities.
  */
 
-import { API_VERSION, Assortment, Item } from "@contrail/entity-types";
+import {
+  API_VERSION,
+  Assortment,
+  Item,
+  ProjectItem,
+} from "@contrail/entity-types";
 import { Entities, login } from "@contrail/sdk";
 
 const ID_OF_PROJECT_WITH_PROJECT_ITEMS = "uuz_v3_l-z4A9akn";
@@ -246,7 +251,7 @@ async function demonstrateAllAccessPatterns() {
     assortmentItemForItem.slice(0, 1),
   );
 }
-demonstrateAllAccessPatterns();
+//demonstrateAllAccessPatterns();
 
 // Access Pattern Implementations
 export async function getProjects(criteria: GetProjectsCriteria) {
@@ -420,4 +425,47 @@ export async function getAssortmentItems(criteria: GetAssortmentItemsCriteria) {
       criteria: { assortmentId: criteria.assortmentId },
     });
   }
+}
+
+export async function getAllProjectItemsForProjectWithPagination(
+  projectId: string,
+) {
+  const client = new Entities();
+
+  let nextPageKey: string | undefined = undefined;
+  const projectItems: ProjectItem[] = [];
+
+  while (true) {
+    const response = await client.get({
+      entityName: "project-item",
+      apiVersion: API_VERSION.V2,
+      nextPageKey,
+      criteria: { projectId },
+    });
+    nextPageKey = response.nextPageKey;
+
+    if (response.results.length === 0 || !nextPageKey) {
+      break; // No more project items to fetch
+    }
+
+    projectItems.push(...(response.results as ProjectItem[]));
+  }
+
+  return projectItems;
+}
+withLogin(async () => {
+  console.time("Get all project items with pagination");
+  const allProjectItems =
+    await getAllProjectItemsForProjectWithPagination("c8pRUkLvkONGWrFz");
+  console.log("Found project items:", allProjectItems.length);
+  console.timeEnd("Get all project items with pagination");
+});
+
+async function withLogin<T>(fn: () => Promise<T>) {
+  await login({
+    orgSlug: process.env.CONTRAIL_ORG_SLUG as string,
+    email: process.env.CONTRAIL_EMAIL,
+    password: process.env.CONTRAIL_PASSWORD,
+  });
+  return fn();
 }
